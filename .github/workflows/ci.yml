@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      EMBEDDING_PROVIDER: hash   # CI 不下载模型，用确定性哈希向量
+      LLM_PROVIDER: mock
+      RERANK_PROVIDER: none
+      ENABLE_CORRECTIVE: "0"
+      ENABLE_PARENT_CHILD: "0"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      # 测试用 hash 向量 + mock LLM，不需要 torch/模型权重，装轻量子集即可
+      - name: 安装依赖
+        run: pip install -r requirements-ci.txt
+
+      - name: 运行单测
+        run: python -m pytest tests/ -q
+
+      - name: 冒烟：离线摄入 + 检索
+        run: |
+          python scripts/ingest.py
+          python scripts/query.py --mode hybrid "保修期是多久"

@@ -1,0 +1,17 @@
+{"id": 1, "question": "Ant Design 的 Button 组件如何设置危险按钮？", "gold_answer": "设置 danger 属性", "source": "button.md", "keywords": ["danger"]}
+{"id": 2, "question": "Badge 徽标超出封顶数字怎么设置？", "gold_answer": "overflowCount 属性，超过时显示为 ${overflowCount}+，为 0 时隐藏", "source": "badge.md", "keywords": ["overflowCount"]}
+{"id": 3, "question": "Upload 组件如何限制上传文件的数量？", "gold_answer": "maxCount 属性", "source": "upload.md", "keywords": ["maxCount"]}
+{"id": 4, "question": "Form 表单的校验基于什么库实现？", "gold_answer": "基于 async-validator 实现数据验证", "source": "form.md", "keywords": ["async-validator"]}
+{"id": 5, "question": "InputNumber 输入框控制数值精度的属性是什么？", "gold_answer": "precision 属性", "source": "input-number.md", "keywords": ["precision"]}
+{"id": 6, "question": "Select 选择器如何开启多选模式？", "gold_answer": "将 mode 属性设置为 multiple", "source": "select.md", "keywords": ["multiple"]}
+{"id": 7, "question": "Switch 开关如何设置较小的尺寸？", "gold_answer": "size 属性设为 small", "source": "switch.md", "keywords": ["size"]}
+{"id": 8, "question": "Progress 进度条支持哪几种类型？", "gold_answer": "line、circle、dashboard 三种", "source": "progress.md", "keywords": ["line", "circle", "dashboard"]}
+{"id": 9, "question": "Tooltip 文字提示弹出位置的属性是什么？", "gold_answer": "placement 属性", "source": "tooltip.md", "keywords": ["placement"]}
+{"id": 10, "question": "message 全局提示的自动关闭延时用什么参数修改？", "gold_answer": "duration 参数", "source": "message.md", "keywords": ["duration"]}
+{"id": 11, "question": "Notification 通知提醒框弹出的位置由哪个属性控制？", "gold_answer": "placement 属性", "source": "notification.md", "keywords": ["placement"]}
+{"id": 12, "question": "Table 表格如何设置分页？", "gold_answer": "pagination 属性（分页设置）", "source": "table.md", "keywords": ["pagination"]}
+{"id": 13, "question": "Cascader 级联选择如何支持搜索？", "gold_answer": "showSearch 属性", "source": "cascader.md", "keywords": ["showSearch"]}
+{"id": 14, "question": "Modal 对话框如何垂直居中展示？", "gold_answer": "centered 属性", "source": "modal.md", "keywords": ["centered"]}
+{"id": 15, "question": "Input 输入框组件如何使用多行文本？", "gold_answer": "使用 Input.TextArea", "source": "input.md", "keywords": ["TextArea"]}
+{"id": 16, "question": "Tree 树形控件如何显示复选框？", "gold_answer": "checkable 属性", "source": "tree.md", "keywords": ["checkable"]}
+{"id": 17, "question": "Typography 排版组件如何让文本可复制？", "gold_answer": "copyable 属性（可复制）", "source": "typography.md", "keywords": ["copyable"]}

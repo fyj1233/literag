@@ -1,0 +1,14 @@
+{"id": 1, "question": "数组的随机访问时间复杂度是多少？", "gold_answer": "O(1)，因为索引本质是内存地址偏移量", "source": "array.md", "keywords": ["随机访问"]}
+{"id": 2, "question": "在数组中插入或删除元素的平均时间复杂度是多少？", "gold_answer": "O(n)，因为需要把后续元素整体后移或前移", "source": "array.md", "keywords": ["插入", "删除"]}
+{"id": 3, "question": "为什么数组索引从 0 开始计数？", "gold_answer": "索引本质是内存地址的偏移量，首个元素偏移量为 0", "source": "array.md", "keywords": ["索引", "偏移"]}
+{"id": 4, "question": "数组扩容是怎么实现的？", "gold_answer": "新建一个更大的数组，再把原数组元素依次复制过去", "source": "array.md", "keywords": ["扩容"]}
+{"id": 5, "question": "哈希表的增删查改操作的时间复杂度是多少？", "gold_answer": "O(1)，最差情况下会退化到 O(n)", "source": "hash_map.md", "keywords": ["哈希表"]}
+{"id": 6, "question": "什么是哈希冲突？", "gold_answer": "多个输入对应同一输出的情况，即两个不同 key 被映射到同一个桶", "source": "hash_map.md", "keywords": ["哈希冲突"]}
+{"id": 7, "question": "哈希表是如何通过哈希函数定位桶索引的？", "gold_answer": "hash(key) % capacity，对桶数量取模", "source": "hash_map.md", "keywords": ["哈希函数", "桶"]}
+{"id": 8, "question": "哈希表的负载因子是什么？Java 超过多少会触发扩容？", "gold_answer": "负载因子=元素数量/桶数量；Java 超过 0.75 时将数组扩容至 2 倍", "source": "hash_map.md", "keywords": ["负载因子", "扩容"]}
+{"id": 9, "question": "快速排序中最核心的操作是什么？", "gold_answer": "哨兵划分（partition），选取基准数将数组划分为左右子数组", "source": "quick_sort.md", "keywords": ["哨兵划分"]}
+{"id": 10, "question": "快速排序的平均时间复杂度和最差时间复杂度分别是多少？", "gold_answer": "平均 O(n log n)，最差 O(n²)", "source": "quick_sort.md", "keywords": ["时间复杂度"]}
+{"id": 11, "question": "快速排序的基准数优化采用什么策略？", "gold_answer": "选取首、尾、中点三个元素的中位数作为基准数", "source": "quick_sort.md", "keywords": ["基准数", "中位数"]}
+{"id": 12, "question": "快速排序中递归深度被限制为多少，最差空间复杂度优化到了多少？", "gold_answer": "递归深度不超过 log n，最差空间复杂度优化至 O(log n)", "source": "quick_sort.md", "keywords": ["递归深度", "空间复杂度"]}
+{"id": 13, "question": "空间复杂度通常统计哪几类空间？", "gold_answer": "暂存空间（暂存数据与栈帧空间）和输出空间", "source": "space_complexity.md", "keywords": ["空间复杂度"]}
+{"id": 14, "question": "循环调用 n 次、栈帧及时释放的函数，与深度为 n 的递归，空间复杂度分别是多少？", "gold_answer": "分别为 O(1) 和 O(n)", "source": "space_complexity.md", "keywords": ["递归", "栈帧"]}

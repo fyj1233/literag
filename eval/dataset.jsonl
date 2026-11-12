@@ -1,0 +1,60 @@
+{"id": 1, "question": "净化器的滤芯多久更换一次？", "gold_answer": "每日使用8小时的标准工况下建议每6至12个月更换一次，高污染环境建议缩短至3个月", "source": "云帆智能空气净化器X1产品手册.md", "keywords": ["滤芯", "更换"]}
+{"id": 2, "question": "云帆X1空气净化器的颗粒物CADR值是多少？", "gold_answer": "400 m³/h", "source": "云帆智能空气净化器X1产品手册.md", "keywords": ["CADR"]}
+{"id": 3, "question": "X1空气净化器适用的房间面积多大？", "gold_answer": "28至48平方米", "source": "云帆智能空气净化器X1产品手册.md", "keywords": ["适用面积"]}
+{"id": 4, "question": "净化器X1的保修期是怎么规定的？", "gold_answer": "整机保修2年，电机部件保修5年，滤芯为耗材不在保修范围", "source": "云帆智能空气净化器X1产品手册.md", "keywords": ["保修"]}
+{"id": 5, "question": "官方滤芯的价格是多少？", "gold_answer": "199元", "source": "云帆智能空气净化器X1产品手册.md", "keywords": ["滤芯", "价格"]}
+{"id": 6, "question": "X1机器的噪音范围是多少分贝？", "gold_answer": "32-54 dB(A)", "source": "云帆智能空气净化器X1产品手册.md", "keywords": ["噪音"]}
+{"id": 7, "question": "空气净化器X1的官方零售价是多少？", "gold_answer": "1499元", "source": "云帆智能空气净化器X1产品手册.md", "keywords": ["零售价"]}
+{"id": 8, "question": "净化器摆放时离墙要多远？", "gold_answer": "与墙壁保持至少30厘米距离", "source": "云帆智能空气净化器X1产品手册.md", "keywords": ["进风口", "墙壁"]}
+{"id": 9, "question": "出差住宿标准一线城市是多少钱一晚？", "gold_answer": "一线城市400元/晚", "source": "云帆科技员工差旅与报销制度.md", "keywords": ["住宿标准"]}
+{"id": 10, "question": "出差餐补每天多少？", "gold_answer": "100元/天，无需发票，按自然日计算", "source": "云帆科技员工差旅与报销制度.md", "keywords": ["餐补"]}
+{"id": 11, "question": "报销必须在出差结束后多少天内提交？", "gold_answer": "10个工作日内", "source": "云帆科技员工差旅与报销制度.md", "keywords": ["报销", "时限"]}
+{"id": 12, "question": "打车报销有什么要求？", "gold_answer": "市内打车实报实销，每日上限80元，需附行程单", "source": "云帆科技员工差旅与报销制度.md", "keywords": ["打车"]}
+{"id": 13, "question": "高铁出差坐什么座位等级？", "gold_answer": "一律二等座，单程6小时以上可申请一等座需总监审批", "source": "云帆科技员工差旅与报销制度.md", "keywords": ["高铁"]}
+{"id": 14, "question": "差旅费的审批流程要经过哪些人？", "gold_answer": "直属上级→财务专员→部门总监，超1万元需分管副总裁加签", "source": "云帆科技员工差旅与报销制度.md", "keywords": ["审批"]}
+{"id": 15, "question": "发票抬头和税号应该写什么？", "gold_answer": "抬头为云帆科技有限公司，税号91330100MA27XFTL00", "source": "云帆科技员工差旅与报销制度.md", "keywords": ["发票", "税号"]}
+{"id": 16, "question": "云帆智联App支持什么手机系统版本？", "gold_answer": "Android 8.0及以上、iOS 13及以上", "source": "云帆智联App使用FAQ.md", "keywords": ["App", "系统"]}
+{"id": 17, "question": "净化器连不上WiFi可能是什么原因？", "gold_answer": "X1仅支持2.4GHz频段，不支持5GHz；需检查双频合一设置、WiFi名称避免中文或空格", "source": "云帆智联App使用FAQ.md", "keywords": ["WiFi"]}
+{"id": 18, "question": "一个账号最多能绑定几台设备？", "gold_answer": "最多10台", "source": "云帆智联App使用FAQ.md", "keywords": ["绑定", "设备"]}
+{"id": 19, "question": "App的历史空气质量数据保留多久？", "gold_answer": "免费保存365天，会员可延长至3年", "source": "云帆智联App使用FAQ.md", "keywords": ["历史数据"]}
+{"id": 20, "question": "空气质量等级是怎么划分的？", "gold_answer": "优(≤35)良(35-75)轻度污染(75-115)中重度污染(>115)", "source": "云帆智联App使用FAQ.md", "keywords": ["空气质量"]}
+{"id": 21, "question": "更换滤芯后怎么复位？", "gold_answer": "App设备详情页→滤芯寿命→更换滤芯→复位，指示灯呼吸闪烁两次确认", "source": "云帆智联App使用FAQ.md", "keywords": ["滤芯复位"]}
+{"id": 22, "question": "公司数据分为哪几个等级？", "gold_answer": "L1公开、L2内部、L3机密、L4绝密四级", "source": "云帆科技数据安全与隐私保护管理办法.md", "keywords": ["数据分级"]}
+{"id": 23, "question": "发现数据泄露后应该在多长时间内上报？", "gold_answer": "2小时内报告安全响应组", "source": "云帆科技数据安全与隐私保护管理办法.md", "keywords": ["泄露", "上报"]}
+{"id": 24, "question": "用户注销后个人信息多久内删除？", "gold_answer": "15个工作日内完成删除或匿名化", "source": "云帆科技数据安全与隐私保护管理办法.md", "keywords": ["注销"]}
+{"id": 25, "question": "员工离职当天账号要怎么处理？", "gold_answer": "离职当天18:00前完成全部系统账号回收，IT与HR双人复核", "source": "云帆科技数据安全与隐私保护管理办法.md", "keywords": ["离职", "账号"]}
+{"id": 26, "question": "公司每年要组织几次数据安全培训？", "gold_answer": "每年两次，全员参加并通过考核", "source": "云帆科技数据安全与隐私保护管理办法.md", "keywords": ["安全培训"]}
+{"id": 27, "question": "试用期是多长时间？", "gold_answer": "统一为6个月", "source": "云帆科技新员工入职指南.md", "keywords": ["试用期"]}
+{"id": 28, "question": "转正流程是怎样的？", "gold_answer": "入职第5个月HR发起转正评估，员工述职，直属上级与跨部门评分，第7个月起按正式薪酬执行", "source": "云帆科技新员工入职指南.md", "keywords": ["转正"]}
+{"id": 29, "question": "年假有几天？", "gold_answer": "入职满1年5天，满3年10天", "source": "云帆科技新员工入职指南.md", "keywords": ["年假"]}
+{"id": 30, "question": "公司的工作时间是怎么安排的？", "gold_answer": "弹性工作制9:00-18:00，核心协作时段11:00-15:00，每日满8小时", "source": "云帆科技新员工入职指南.md", "keywords": ["考勤"]}
+{"id": 31, "question": "内部Wiki的地址是什么？", "gold_answer": "wiki.yunfan.tech", "source": "云帆科技新员工入职指南.md", "keywords": ["Wiki"]}
+{"id": 32, "question": "新人入职第一个月的融入目标是什么？", "gold_answer": "第1周完成安全培训与环境搭建，第2-3周认领任务并演练代码评审，第4周做自我介绍分享", "source": "云帆科技新员工入职指南.md", "keywords": ["融入"]}
+{"id": 33, "question": "滤芯更换周期和差旅报销时限分别是多久？", "gold_answer": "滤芯6至12个月；报销10个工作日内", "source": ["云帆智能空气净化器X1产品手册.md", "云帆科技员工差旅与报销制度.md"], "keywords": ["滤芯", "报销"]}
+{"id": 34, "question": "净化器出现异味异响应该怎么办，同时公司对数据泄露的响应时限是多久？", "gold_answer": "净化器立即断电联系客服400-880-6666；数据泄露2小时内上报安全响应组", "source": ["云帆智能空气净化器X1产品手册.md", "云帆科技数据安全与隐私保护管理办法.md"], "keywords": ["异响", "泄露"]}
+{"id": 35, "question": "H2 加湿器的保修期是多久？", "gold_answer": "整机保修 1 年，水箱与滤网为耗材不保修", "source": "云帆智能加湿器H2产品手册.md", "keywords": ["保修", "加湿器"]}
+{"id": 36, "question": "加湿器 H2 的雾量有多大？", "gold_answer": "强档雾量 300 mL/h", "source": "云帆智能加湿器H2产品手册.md", "keywords": ["雾量"]}
+{"id": 37, "question": "H2 加湿器的水箱容量是多少？", "gold_answer": "4L，低档约可连续运行12小时", "source": "云帆智能加湿器H2产品手册.md", "keywords": ["水箱"]}
+{"id": 38, "question": "加湿器 H2 适合多大房间？", "gold_answer": "20 至 35 平方米", "source": "云帆智能加湿器H2产品手册.md", "keywords": ["适用面积"]}
+{"id": 39, "question": "H2 的滤网型号和价格是多少？", "gold_answer": "型号 YF-J1，官方单价 89 元", "source": "云帆智能加湿器H2产品手册.md", "keywords": ["滤网", "价格"]}
+{"id": 40, "question": "加湿器 H2 的官方零售价是多少？", "gold_answer": "699 元", "source": "云帆智能加湿器H2产品手册.md", "keywords": ["零售价"]}
+{"id": 41, "question": "加湿器没水了会发生什么？", "gold_answer": "自动停机保护，面板红灯闪烁提醒，加水后重新开机恢复", "source": "云帆智能加湿器H2产品手册.md", "keywords": ["缺水"]}
+{"id": 42, "question": "H2 加湿器的噪音范围是多少？", "gold_answer": "28 - 42 dB(A)", "source": "云帆智能加湿器H2产品手册.md", "keywords": ["噪音"]}
+{"id": 43, "question": "公司应急演练多久组织一次？", "gold_answer": "全员级演练每半年至少 1 次，其中实战攻防每年至少 1 次", "source": "云帆科技信息安全应急演练预案.md", "keywords": ["演练"]}
+{"id": 44, "question": "安全应急事件是怎么分级的？", "gold_answer": "P1 特别重大 / P2 重大 / P3 较大 / P4 一般", "source": "云帆科技信息安全应急演练预案.md", "keywords": ["分级"]}
+{"id": 45, "question": "P1 级安全事件的响应时限是什么要求？", "gold_answer": "15 分钟内响应，1 小时内成立应急小组", "source": "云帆科技信息安全应急演练预案.md", "keywords": ["响应时限"]}
+{"id": 46, "question": "应急演练有哪几种形式？", "gold_answer": "桌面推演与实战攻防（红蓝对抗）两种", "source": "云帆科技信息安全应急演练预案.md", "keywords": ["演练形式"]}
+{"id": 47, "question": "演练结束后复盘报告什么时候出？", "gold_answer": "5 个工作日内由组织方输出", "source": "云帆科技信息安全应急演练预案.md", "keywords": ["复盘"]}
+{"id": 48, "question": "速净 S9 净化器的颗粒物 CADR 是多少？", "gold_answer": "450 m³/h", "source": "速净科技S9净化器竞品手册.md", "keywords": ["CADR", "S9"]}
+{"id": 49, "question": "速净 S9 的官方价格是多少？", "gold_answer": "1299 元", "source": "速净科技S9净化器竞品手册.md", "keywords": ["价格", "S9"]}
+{"id": 50, "question": "S9 净化器保修几年？", "gold_answer": "整机保修 3 年（需每年在速净之家 App 激活登记）", "source": "速净科技S9净化器竞品手册.md", "keywords": ["保修", "S9"]}
+{"id": 51, "question": "速净 S9 的滤芯型号和售价是什么？", "gold_answer": "SJ-Pro，官方售价 259 元", "source": "速净科技S9净化器竞品手册.md", "keywords": ["滤芯", "S9"]}
+{"id": 52, "question": "速净 S9 配套的 App 叫什么？", "gold_answer": "速净之家", "source": "速净科技S9净化器竞品手册.md", "keywords": ["App", "S9"]}
+{"id": 53, "question": "速净 S9 适合多大的房间？", "gold_answer": "30 至 55 平方米", "source": "速净科技S9净化器竞品手册.md", "keywords": ["适用面积", "S9"]}
+{"id": 54, "question": "云帆 X1 和加湿器 H2 哪个保修期更长？", "gold_answer": "X1 整机保修 2 年，H2 保修 1 年，X1 更长", "source": ["云帆智能空气净化器X1产品手册.md", "云帆智能加湿器H2产品手册.md"], "keywords": ["保修", "对比"]}
+{"id": 55, "question": "云帆 X1 和速净 S9 谁的颗粒物 CADR 更大？", "gold_answer": "S9 的 450 m³/h 大于 X1 的 400 m³/h", "source": ["速净科技S9净化器竞品手册.md", "云帆智能空气净化器X1产品手册.md"], "keywords": ["CADR", "对比"]}
+{"id": 56, "question": "数据泄露的上报时限和 P1 事件的响应时限分别是多少？", "gold_answer": "泄露 2 小时内上报安全响应组；P1 事件 15 分钟内响应", "source": ["云帆科技数据安全与隐私保护管理办法.md", "云帆科技信息安全应急演练预案.md"], "keywords": ["上报", "响应"]}
+{"id": 57, "question": "产品客服热线和应急值班电话分别是多少？", "gold_answer": "客服 400-880-6666；安全值班 400-880-119", "source": ["云帆智能空气净化器X1产品手册.md", "云帆科技信息安全应急演练预案.md"], "keywords": ["电话"]}
+{"id": 58, "question": "加湿器 H2 和净化器 X1 哪个更贵？", "gold_answer": "X1 零售价 1499 元高于 H2 的 699 元", "source": ["云帆智能空气净化器X1产品手册.md", "云帆智能加湿器H2产品手册.md"], "keywords": ["价格", "对比"]}
+{"id": 59, "question": "X1 净化器的尺寸和净重是多少？", "gold_answer": "350 × 350 × 638 mm，净重 7.8 kg", "source": "云帆智能空气净化器X1产品手册.md", "keywords": ["尺寸"]}
+{"id": 60, "question": "H2 加湿器的尺寸和净重是多少？", "gold_answer": "260 × 260 × 380 mm，净重 3.2 kg", "source": "云帆智能加湿器H2产品手册.md", "keywords": ["尺寸"]}

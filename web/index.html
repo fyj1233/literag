@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LiteRAG · 知识库问答</title>
+<style>
+:root {
+  --bg: #f6f7fb; --panel: #ffffff; --border: #e5e8f0; --text: #1f2430;
+  --muted: #6b7280; --primary: #4f6ef7; --primary-soft: #eef1fe;
+  --green: #16a34a; --orange: #ea580c; --radius: 12px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif;
+       background: var(--bg); color: var(--text); height: 100vh; display: flex; }
+
+/* ---------- 侧栏 ---------- */
+.sidebar { width: 300px; background: var(--panel); border-right: 1px solid var(--border);
+           display: flex; flex-direction: column; padding: 18px; gap: 18px; overflow-y: auto; }
+.logo { font-size: 20px; font-weight: 700; }
+.logo span { color: var(--primary); }
+.logo-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.section-title { font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 8px; }
+.card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; }
+
+.mode-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.mode-btn { padding: 8px 6px; border: 1px solid var(--border); border-radius: 8px; background: #fff;
+            cursor: pointer; font-size: 13px; text-align: center; transition: all .15s; }
+.mode-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.mode-desc { font-size: 11px; color: var(--muted); margin-top: 8px; line-height: 1.5; min-height: 32px; }
+
+.param-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; margin: 8px 0; }
+.param-row input[type=range] { width: 130px; accent-color: var(--primary); }
+
+.dropzone { border: 2px dashed var(--border); border-radius: var(--radius); padding: 18px 10px;
+            text-align: center; font-size: 13px; color: var(--muted); cursor: pointer; transition: all .15s; }
+.dropzone:hover, .dropzone.drag { border-color: var(--primary); background: var(--primary-soft); color: var(--primary); }
+.doc-list { display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto; }
+.doc-item { display: flex; justify-content: space-between; align-items: center; font-size: 12.5px;
+            background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; }
+.doc-item .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.doc-item .del { color: #ef4444; cursor: pointer; font-size: 14px; padding: 0 4px; }
+.stat { font-size: 12px; color: var(--muted); line-height: 1.8; }
+.stat b { color: var(--text); }
+
+/* ---------- 聊天区 ---------- */
+.main { flex: 1; display: flex; flex-direction: column; height: 100vh; }
+.chat { flex: 1; overflow-y: auto; padding: 26px 10%; }
+.empty { text-align: center; color: var(--muted); margin-top: 18vh; }
+.empty h2 { color: var(--text); margin-bottom: 10px; }
+.suggest { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 22px; }
+.suggest button { padding: 9px 16px; border: 1px solid var(--border); background: #fff; border-radius: 20px;
+                  font-size: 13px; cursor: pointer; color: var(--text); }
+.suggest button:hover { border-color: var(--primary); color: var(--primary); }
+
+.msg { margin-bottom: 22px; display: flex; }
+.msg.user { justify-content: flex-end; }
+.bubble { max-width: 82%; border-radius: var(--radius); padding: 12px 16px; font-size: 14.5px; line-height: 1.75; }
+.msg.user .bubble { background: var(--primary); color: #fff; border-bottom-right-radius: 4px; }
+.msg.bot .bubble { background: var(--panel); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+.bubble p { margin: 6px 0; }
+.bubble ul, .bubble ol { margin: 6px 0 6px 20px; }
+.bubble code { background: var(--bg); padding: 1px 5px; border-radius: 4px; font-size: 13px; }
+.cite { color: var(--primary); font-weight: 700; cursor: pointer; font-size: 12px;
+        padding: 0 3px; vertical-align: super; }
+.cite:hover { text-decoration: underline; }
+.cursor { display: inline-block; width: 8px; height: 16px; background: var(--primary);
+          animation: blink .8s infinite; vertical-align: -2px; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* 检索过程 & 引用 */
+.panel { margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 10px; }
+.panel summary { font-size: 12.5px; color: var(--muted); cursor: pointer; user-select: none; }
+.trace-line { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.7; }
+.trace-line b { color: var(--text); font-weight: 600; }
+.chip { display: inline-block; background: var(--primary-soft); color: var(--primary);
+        border-radius: 10px; padding: 1px 8px; font-size: 11.5px; margin: 2px 4px 2px 0; }
+.src-card { border: 1px solid var(--border); border-radius: 8px; padding: 9px 11px; margin-top: 8px;
+            font-size: 12.5px; background: var(--bg); }
+.src-card .head { display: flex; justify-content: space-between; color: var(--muted); font-size: 11.5px; }
+.src-card .ref-no { color: var(--primary); font-weight: 700; margin-right: 6px; }
+.src-card .body { margin-top: 5px; line-height: 1.6; color: var(--text); }
+.score-bar { display: inline-block; height: 4px; background: var(--primary); border-radius: 2px; vertical-align: middle; }
+
+/* 输入区 */
+.input-bar { padding: 14px 10% 22px; background: linear-gradient(transparent, var(--bg) 30%); }
+.input-wrap { display: flex; gap: 10px; background: #fff; border: 1px solid var(--border);
+              border-radius: 14px; padding: 10px 12px; align-items: flex-end; }
+.input-wrap:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+textarea { flex: 1; border: none; outline: none; resize: none; font-size: 14.5px; font-family: inherit;
+           max-height: 120px; line-height: 1.6; background: transparent; }
+.send-btn { background: var(--primary); color: #fff; border: none; border-radius: 10px;
+            padding: 8px 18px; font-size: 14px; cursor: pointer; }
+.send-btn:disabled { background: #c3cbf9; cursor: not-allowed; }
+.hint { text-align: center; font-size: 11.5px; color: var(--muted); margin-top: 8px; }
+.toast { position: fixed; top: 18px; left: 50%; transform: translateX(-50%); background: #1f2430;
+         color: #fff; padding: 9px 18px; border-radius: 8px; font-size: 13px; opacity: 0;
+         transition: opacity .25s; pointer-events: none; z-index: 99; }
+.toast.show { opacity: .92; }
+/* 登录 */
+.login-mask { position: fixed; inset: 0; background: rgba(24,28,44,.72); display: flex;
+              align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(3px); }
+.login-box { background: #fff; border-radius: 16px; padding: 30px 34px; width: 340px; box-shadow: 0 18px 60px rgba(0,0,0,.3); }
+.login-box h2 { font-size: 20px; margin-bottom: 4px; }
+.login-box .sub { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+.login-box input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;
+                   font-size: 14px; margin-bottom: 10px; outline: none; }
+.login-box input:focus { border-color: var(--primary); }
+.login-box button { width: 100%; padding: 11px; background: var(--primary); color: #fff; border: none;
+                    border-radius: 8px; font-size: 15px; cursor: pointer; }
+.login-box .quick { font-size: 12px; color: var(--muted); margin-top: 12px; line-height: 1.7; }
+.login-box .quick b { color: var(--primary); cursor: pointer; }
+.user-card { display: flex; justify-content: space-between; align-items: center; }
+.user-card .who { font-size: 13px; font-weight: 600; }
+.user-card .role { font-size: 11px; color: #fff; background: var(--primary); border-radius: 8px; padding: 1px 8px; margin-left: 6px; }
+.user-card .out { font-size: 12px; color: var(--muted); cursor: pointer; }
+.vis-select { width: 100%; margin-top: 8px; padding: 7px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; }
+.vis-lv { font-size: 10.5px; color: var(--orange); border: 1px solid currentColor; border-radius: 6px; padding: 0 5px; margin-right: 4px; }
+.vis-mini { width: auto !important; padding: 2px 4px !important; font-size: 11px !important; margin-right: 4px; }
+/* 设置面板 */
+.set-h { font-weight: 700; margin: 16px 0 8px; font-size: 14px; color: var(--text); }
+.set-row { display: flex; gap: 10px; margin: 6px 0; align-items: center; }
+.set-row label { width: 140px; font-size: 12.5px; color: var(--muted); flex-shrink: 0; }
+.set-row input { flex: 1; padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; }
+.switch-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.sw { display: flex; align-items: center; gap: 5px; font-size: 12.5px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 5px 10px; cursor: pointer; }
+.btn2 { padding: 7px 14px; border: 1px solid var(--primary); background: var(--primary-soft); color: var(--primary); border-radius: 8px; font-size: 13px; cursor: pointer; }
+.btn2.solid { background: var(--primary); color: #fff; }
+.test-result { font-size: 12.5px; margin-top: 6px; color: var(--green); min-height: 18px; }
+.warn { color: var(--orange); font-size: 12px; min-height: 16px; }
+.attach-btn { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; font-size: 16px; padding: 6px 10px; cursor: pointer; }
+.attach-thumb { max-height: 120px; max-width: 200px; border-radius: 8px; margin-top: 8px; display: block; }
+.img-preview { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.img-preview img { max-height: 64px; border-radius: 6px; }
+.img-preview .del { color: #ef4444; cursor: pointer; font-size: 13px; }
+#settingsMask .settings-box { width: 660px; max-width: 94vw; max-height: 88vh; overflow-y: auto; background: #fff; border-radius: 16px; padding: 24px 28px; }
+#settingsMask h2 { font-size: 18px; }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div>
+    <div class="logo">Lite<span>RAG</span></div>
+    <div class="logo-sub">轻量级知识库问答 · 混合检索 + 精排 + 引用溯源</div>
+  </div>
+
+  <div class="card user-card" id="userCard" style="display:none">
+    <span class="who" id="whoami">—</span>
+    <span><span class="role" id="roleTag">—</span> <span class="out" onclick="logout()">退出</span></span>
+  </div>
+
+  <div class="card" id="settingsCard" style="display:none">
+    <div class="section-title">⚙️ 系统设置（仅 boss）</div>
+    <button class="btn2 solid" style="width:100%" onclick="openSettings()">打开设置面板</button>
+  </div>
+
+  <div class="card">
+    <div class="section-title">检索模式（可现场对比消融效果）</div>
+    <div class="mode-group" id="modeGroup">
+      <button class="mode-btn" data-mode="naive">naive 向量</button>
+      <button class="mode-btn active" data-mode="full">full 全家桶</button>
+      <button class="mode-btn" data-mode="hybrid">hybrid 混合</button>
+      <button class="mode-btn" data-mode="rerank">rerank 精排</button>
+    </div>
+    <div class="mode-desc" id="modeDesc"></div>
+  </div>
+
+  <div class="card">
+    <div class="param-row"><span>返回引用数 top-k</span><span id="topkVal">5</span></div>
+    <div class="param-row"><input type="range" id="topk" min="1" max="10" value="5"></div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">知识库文档</div>
+    <div class="dropzone" id="dropzone">点击或拖拽上传<br>md / txt / pdf / docx / 图片</div>
+    <select class="vis-select" id="visSel">
+      <option value="L1">L1 · 公开（所有人可见）</option>
+      <option value="L2">L2 · 内部（员工及以上）</option>
+      <option value="L3">L3 · 机密（仅管理层）</option>
+      <option value="L4">L4 · 绝密（仅老板）</option>
+    </select>
+    <input type="file" id="fileInput" hidden accept=".md,.markdown,.txt,.pdf,.docx,.png,.jpg,.jpeg,.webp">
+    <div class="doc-list" id="docList" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">系统状态</div>
+    <div class="stat" id="stats">加载中…</div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="chat" id="chat">
+    <div class="empty" id="empty">
+      <h2>LiteRAG 知识库问答</h2>
+      <p>BM25 + 向量双路召回 → RRF 融合 → CrossEncoder 精排 → 带引用生成</p>
+      <div class="suggest">
+        <button onclick="ask('净化器的滤芯多久换一次？')">净化器的滤芯多久换一次？</button>
+        <button onclick="ask('出差住宿标准是多少？')">出差住宿标准是多少？</button>
+        <button onclick="ask('数据泄露了要怎么处理？')">数据泄露了要怎么处理？</button>
+        <button onclick="ask('试用期多久，怎么转正？')">试用期多久，怎么转正？</button>
+      </div>
+    </div>
+  </div>
+  <div class="input-bar">
+    <div class="img-preview" id="imgPreview" style="display:none"></div>
+    <div class="input-wrap">
+      <button class="attach-btn" id="chatImgBtn" title="附图提问（识图模型看图回答）">📷</button>
+      <input type="file" id="chatImgInput" hidden accept=".png,.jpg,.jpeg,.webp,image/*">
+      <textarea id="input" rows="1" placeholder="输入问题（可点 📷 附图），Enter 发送"></textarea>
+      <button class="send-btn" id="sendBtn">发送</button>
+    </div>
+    <div class="hint">答案中的 <b style="color:var(--primary)">[n]</b> 角标可点击查看引用来源</div>
+  </div>
+</main>
+
+<!-- 登录遮罩 -->
+<div class="login-mask" id="loginMask" style="display:none">
+  <div class="login-box">
+    <h2>LiteRAG 登录</h2>
+    <div class="sub">分级权限演示：不同身份看到不同的知识库</div>
+    <input id="loginUser" placeholder="用户名">
+    <input id="loginPass" type="password" placeholder="密码">
+    <button onclick="doLogin()">登 录</button>
+    <div class="quick">内置演示账号：<b onclick="fill('boss','boss123')">boss/boss123</b> ·
+      <b onclick="fill('employee','employee123')">employee/employee123</b> ·
+      <b onclick="fill('guest','guest123')">guest/guest123</b></div>
+  </div>
+</div>
+
+<!-- 系统设置弹窗（boss） -->
+<div class="login-mask" id="settingsMask" style="display:none; align-items:flex-start; overflow-y:auto; padding:36px 0;">
+  <div class="settings-box">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <h2>⚙️ 系统设置</h2>
+      <span onclick="closeSettings()" style="cursor:pointer; color:var(--muted); font-size:14px;">关闭 ✕</span>
+    </div>
+    <div class="set-h">🤖 LLM 端点（保存后立即生效，无需重启）</div>
+    <div class="set-row"><label>base_url</label><input id="setBase" placeholder="https://api.deepseek.com"></div>
+    <div class="set-row"><label>api_key</label><input type="password" id="setKey"></div>
+    <div class="set-row"><label>model</label><input id="setModel"></div>
+    <div class="set-row"><label>temperature</label><input type="number" id="setTemp" step="0.1" min="0" max="2"></div>
+    <div class="set-row"><label>max_tokens</label><input type="number" id="setMax"></div>
+    <div class="set-row">
+      <button class="btn2" onclick="testLlm()">🔍 测试连接（测首字延迟）</button>
+      <button class="btn2 solid" onclick="saveLlm()">💾 保存 LLM 配置</button>
+    </div>
+    <div class="test-result" id="llmTestResult"></div>
+    <div class="set-h">👁️ 识图模型（图片理解入库；端点/密钥/模型留空 = 复用上方主模型，要求主模型支持识图）</div>
+    <div class="set-row"><label>启用识图入库</label><input type="checkbox" id="setVisionEnabled" style="width:auto"></div>
+    <div class="set-row"><label>base_url</label><input id="setVisBase" placeholder="留空 = 使用主模型端点"></div>
+    <div class="set-row"><label>api_key</label><input type="password" id="setVisKey" placeholder="留空 = 使用主模型密钥"></div>
+    <div class="set-row"><label>model</label><input id="setVisModel" placeholder="留空 = 使用主模型"></div>
+    <div class="set-row"><label>每文档最多识图数</label><input type="number" id="setVisMax"></div>
+    <div class="set-row">
+      <button class="btn2" onclick="testVision()">🔍 测试识图（应读出暗号 7391）</button>
+      <button class="btn2 solid" onclick="saveVision()">💾 保存识图模型</button>
+    </div>
+    <div class="test-result" id="visionTestResult"></div>
+    <div class="set-h">🎛️ 功能开关（保存即生效）</div>
+    <div class="switch-row" id="featureBox"></div>
+    <button class="btn2" onclick="saveFeatures()" style="margin-top:8px">💾 保存开关</button>
+    <div class="set-h">📏 检索参数</div>
+    <div id="retrievalBox"></div>
+    <div class="warn" id="reingestWarn"></div>
+    <button class="btn2" onclick="saveRetrieval()" style="margin-top:8px">💾 保存参数</button>
+    <div class="set-h">🧾 审计日志（最近 50 条，谁问了什么）</div>
+    <button class="btn2" onclick="loadAudit()">加载审计</button>
+    <div id="auditBox" style="max-height:220px; overflow-y:auto; margin-top:8px;"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const MODE_DESC = {
+  naive:  '仅向量召回（baseline，用于消融对比）',
+  hybrid: '向量 + BM25 双路召回，RRF 融合',
+  rerank: 'hybrid 之上叠加 CrossEncoder 精排',
+  full:   'rerank + LLM 查询改写与子查询分解（完整链路）',
+};
+let mode = 'full';
+const $ = id => document.getElementById(id);
+const chat = $('chat');
+
+/* ---------- 认证 ---------- */
+let ME = null;   // {username, role, allowed}
+function token() { return localStorage.getItem('literag_token') || ''; }
+
+async function api(url, opts = {}) {
+  opts.headers = Object.assign({ 'Authorization': 'Bearer ' + token() }, opts.headers || {});
+  const resp = await fetch(url, opts);
+  if (resp.status === 401) { showLogin(); throw new Error('登录已过期，请重新登录'); }
+  return resp;
+}
+function showLogin() { ME = null; localStorage.removeItem('literag_token'); $('loginMask').style.display = 'flex'; }
+function fill(u, p) { $('loginUser').value = u; $('loginPass').value = p; }
+async function doLogin() {
+  const resp = await fetch('/api/auth/login', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: $('loginUser').value.trim(), password: $('loginPass').value }),
+  });
+  const data = await resp.json();
+  if (!resp.ok) { toast('登录失败：' + (data.detail || '')); return; }
+  localStorage.setItem('literag_token', data.token);
+  ME = data; $('loginMask').style.display = 'none';
+  applyRole(); toast(`欢迎，${ME.username}（${ME.role}）`); refreshDocs();
+}
+function logout() { localStorage.removeItem('literag_token'); location.reload(); }
+
+/* ---------- 系统设置（boss 专属） ---------- */
+const FEATURE_LABELS = {enable_hybrid:'混合召回',enable_rerank:'精排',enable_query_rewrite:'查询改写',enable_multi_query:'多查询',enable_hyde:'HyDE',enable_corrective:'CRAG 纠正',enable_parent_child:'Parent-Child'};
+const INT_LABELS = {vector_top_k:'向量召回 K',bm25_top_k:'BM25 召回 K',rrf_k:'RRF k 值',candidate_k:'融合候选数',final_top_k:'终选 Top-K',chunk_size:'块大小（字）',chunk_overlap:'块重叠（字）'};
+
+function openSettings() { $('settingsMask').style.display = 'flex'; loadSettings(); }
+function closeSettings() { $('settingsMask').style.display = 'none'; }
+
+async function loadSettings() {
+  const s = await (await api('/api/settings')).json();
+  $('setBase').value = s.llm.base_url; $('setModel').value = s.llm.model;
+  $('setKey').value = '';
+  $('setKey').placeholder = s.llm.has_key ? '已配置 ' + s.llm.api_key_masked + '（留空保持不变）' : '尚未配置';
+  $('setTemp').value = s.llm.temperature; $('setMax').value = s.llm.max_tokens;
+  $('featureBox').innerHTML = Object.entries(s.features).map(([k, v]) =>
+    '<label class="sw"><input type="checkbox" data-feat="' + k + '"' + (v ? ' checked' : '') + '> ' + (FEATURE_LABELS[k] || k) + '</label>').join('');
+  $('retrievalBox').innerHTML = Object.entries(s.retrieval).map(([k, v]) =>
+    '<div class="set-row"><label>' + (INT_LABELS[k] || k) + '</label><input type="number" data-int="' + k + '" value="' + v + '"></div>').join('');
+  $('llmTestResult').textContent = ''; $('reingestWarn').textContent = ''; $('auditBox').innerHTML = '';
+  $('setVisionEnabled').checked = s.vision.enabled;
+  $('setVisBase').value = s.vision.base_url; $('setVisModel').value = s.vision.model;
+  $('setVisKey').value = ''; $('setVisKey').placeholder = '已配置 ' + s.vision.api_key_masked + '（留空 = 复用主模型密钥）';
+  $('setVisMax').value = s.vision.max_images;
+  $('visionTestResult').textContent = '';
+}
+async function saveLlm() {
+  const body = { base_url: $('setBase').value.trim(), model: $('setModel').value.trim(),
+    temperature: parseFloat($('setTemp').value) || 0.3, max_tokens: parseInt($('setMax').value) || 1024 };
+  if ($('setKey').value.trim()) body.api_key = $('setKey').value.trim();
+  const resp = await api('/api/settings/llm', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const d = await resp.json();
+  if (!resp.ok) { toast('保存失败：' + (d.detail || '')); return; }
+  toast('LLM 配置已保存并生效'); loadSettings();
+}
+async function testLlm() {
+  $('llmTestResult').textContent = '测速中…（约几秒）';
+  const body = { base_url: $('setBase').value.trim(), model: $('setModel').value.trim() };
+  if ($('setKey').value.trim()) body.api_key = $('setKey').value.trim();
+  const resp = await api('/api/settings/llm/test', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const d = await resp.json();
+  $('llmTestResult').textContent = d.ok
+    ? '✅ 首字延迟 ' + d.ttft_s + 's · ' + d.deltas + ' 个增量 · 总耗时 ' + d.total_s + 's（模型 ' + d.model + '）'
+    : '❌ ' + d.error;
+}
+async function saveFeatures() {
+  const body = {};
+  $('featureBox').querySelectorAll('input[data-feat]').forEach(i => body[i.dataset.feat] = i.checked);
+  const resp = await api('/api/settings/features', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  if (resp.ok) { toast('功能开关已保存并生效'); loadSettings(); }
+}
+async function saveRetrieval() {
+  const body = {};
+  $('retrievalBox').querySelectorAll('input[data-int]').forEach(i => body[i.dataset.int] = parseInt(i.value) || 0);
+  const resp = await api('/api/settings/retrieval', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const d = await resp.json();
+  if (!resp.ok) { toast('保存失败：' + (d.detail || '')); return; }
+  $('reingestWarn').textContent = d.note || '✓ 已保存并生效';
+  toast('检索参数已保存');
+}
+async function loadAudit() {
+  const d = await (await api('/api/settings/audit')).json();
+  $('auditBox').innerHTML = '<table style="font-size:11.5px; border-collapse:collapse"><tr><th style="text-align:left">时间</th><th>用户</th><th>问题</th><th>命中来源</th></tr>' +
+    d.entries.map(e => '<tr><td style="padding:3px 6px">' + new Date(e.ts * 1000).toLocaleTimeString() + '</td><td style="padding:3px 6px">' + e.username + '</td><td style="padding:3px 6px; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap" title="' + esc(e.question) + '">' + esc(e.question) + '</td><td style="padding:3px 6px; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">' + esc(e.sources) + '</td></tr>').join('') + '</table>';
+}
+function applyRole() {
+  if (!ME) return;
+  $('userCard').style.display = 'flex';
+  $('whoami').textContent = ME.username;
+  $('roleTag').textContent = ME.role;
+  const canWrite = ME.role === 'boss' || ME.role === 'employee';
+  $('dropzone').style.display = canWrite ? '' : 'none';
+  $('visSel').style.display = canWrite ? '' : 'none';
+  $('settingsCard').style.display = ME.role === 'boss' ? '' : 'none';
+}
+(async () => {   // 启动：有 token 则校验，无 token 弹登录
+  if (token()) {
+    try {
+      ME = await (await api('/api/auth/me')).json();
+      applyRole();
+    } catch { /* 401 已由 api() 弹出登录 */ }
+  } else showLogin();
+})();
+
+function toast(msg) {
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+/* ---------- 模式切换 / 参数 ---------- */
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    mode = btn.dataset.mode;
+    $('modeDesc').textContent = MODE_DESC[mode];
+  };
+});
+$('modeDesc').textContent = MODE_DESC[mode];
+$('topk').oninput = e => $('topkVal').textContent = e.target.value;
+
+async function saveVision() {
+  const body = { enabled: $('setVisionEnabled').checked,
+    base_url: $('setVisBase').value.trim(), model: $('setVisModel').value.trim(),
+    max_images: parseInt($('setVisMax').value) || 5 };
+  if ($('setVisKey').value.trim()) body.api_key = $('setVisKey').value.trim();
+  const resp = await api('/api/settings/vision', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const d = await resp.json();
+  if (!resp.ok) { toast('保存失败：' + (d.detail || '')); return; }
+  toast('识图模型已保存'); loadSettings();
+}
+async function testVision() {
+  $('visionTestResult').textContent = '识图测试中…';
+  const body = {};
+  if ($('setVisBase').value.trim()) body.base_url = $('setVisBase').value.trim();
+  if ($('setVisKey').value.trim()) body.api_key = $('setVisKey').value.trim();
+  if ($('setVisModel').value.trim()) body.model = $('setVisModel').value.trim();
+  const resp = await api('/api/settings/vision/test', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const d = await resp.json();
+  $('visionTestResult').textContent = d.ok
+    ? '✅ 识图成功（' + d.elapsed_s + 's）——' + d.note
+    : '❌ ' + (d.error || d.note || '未知错误');
+}
+
+/* ---------- 知识库 ---------- */
+async function refreshDocs() {
+  const docs = await (await api('/api/documents')).json();
+  const stats = await (await api('/api/stats')).json();
+  $('docList').innerHTML = (docs.documents || []).map(d => {
+    const enc = encodeURIComponent(d.source);
+    const isBoss = ME && ME.role === 'boss';
+    const visCtl = isBoss
+      ? `<select class="vis-select vis-mini" onchange="setVis('${enc}', this.value)" title="修改查看权限（立即生效）">` +
+        ['L1','L2','L3','L4'].map(l => `<option value="${l}" ${d.visibility === l ? 'selected' : ''}>${l}</option>`).join('') + '</select>'
+      : `<span class="vis-lv">${d.visibility}</span>`;
+    const del = ME && ME.role !== 'guest' ? `<span class="del" onclick="delDoc('${enc}')">✕</span>` : '';
+    return `<div class="doc-item"><span class="name" title="${d.source}">${d.source}</span>
+     <span>${visCtl}<span style="color:var(--muted)">${d.chunks}块</span>${del}</span></div>`;
+  }).join('') || '<div style="font-size:12px;color:var(--muted)">暂无可见文档（当前身份权限为空或库为空）</div>';
+  $('stats').innerHTML = `可见 chunk：<b>${stats.chunks}</b>（当前权限）<br>
+    Embedding：<b style="font-size:11px">${stats.embedding}</b><br>
+    LLM Provider：<b>${stats.llm_provider}</b> · Rerank：<b>${stats.reranker}</b>`;
+}
+
+async function setVis(enc, vis) {
+  const resp = await api('/api/documents/visibility', { method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ source: decodeURIComponent(enc), visibility: vis }) });
+  const d = await resp.json();
+  if (!resp.ok) { toast('修改失败：' + (d.detail || '')); refreshDocs(); return; }
+  toast(`《${d.source}》密级已改为 ${d.visibility}，立即生效`);
+}
+
+async function delDoc(name) {
+  if (!confirm('删除该文档的全部索引？')) return;
+  const resp = await api('/api/documents?source=' + name, { method: 'DELETE' });
+  if (!resp.ok) { const e = await resp.json(); toast('失败：' + (e.detail || resp.status)); return; }
+  toast('已删除'); refreshDocs();
+}
+
+const dz = $('dropzone');
+dz.onclick = () => $('fileInput').click();
+dz.ondragover = e => { e.preventDefault(); dz.classList.add('drag'); };
+dz.ondragleave = () => dz.classList.remove('drag');
+dz.ondrop = e => { e.preventDefault(); dz.classList.remove('drag'); upload(e.dataTransfer.files[0]); };
+$('fileInput').onchange = e => upload(e.target.files[0]);
+
+async function upload(file) {
+  if (!file) return;
+  toast('上传并解析中：' + file.name);
+  const fd = new FormData(); fd.append('file', file);
+  fd.append('visibility', $('visSel').value);
+  const resp = await api('/api/documents', { method: 'POST', body: fd });
+  const data = await resp.json();
+  if (!resp.ok) { toast('失败：' + (data.detail || resp.status)); return; }
+  toast(`已入库 ${data.source}（${data.chunks} 个 chunk，${data.elapsed}s）`);
+  refreshDocs();
+}
+
+/* ---------- 极简 Markdown 渲染（先转义再渲染，防注入） ---------- */
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function md(text) {
+  let h = esc(text);
+  h = h.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
+       .replace(/`([^`]+)`/g, '<code>$1</code>');
+  h = h.replace(/^(#{1,4})\s+(.+)$/gm, (_, lv, t) => `<p><b style="font-size:${17 - lv.length}px">${t}</b></p>`);
+  h = h.replace(/^\s*[-*]\s+(.+)$/gm, '<li>$1</li>').replace(/^\s*\d+\.\s+(.+)$/gm, '<li>$1</li>');
+  h = h.replace(/(<li>[\s\S]*?<\/li>)(?!\s*<li>)/g, '<ul>$1</ul>');
+  h = h.split(/\n{2,}/).map(p => /^\s*<(ul|p|b|h)/.test(p) ? p : `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+  return h;
+}
+function renderCites(html) {
+  return html.replace(/\[(\d{1,2})\]/g,
+    '<sup class="cite" data-ref="$1" title="查看引用 $1">[$1]</sup>');
+}
+
+/* ---------- 对话 ---------- */
+function addMsg(role) {
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  div.appendChild(bubble); chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+  return bubble;
+}
+
+const history = [];
+let busy = false;
+let chatImage = null;   // 待发送的附图（dataURL）
+
+$('chatImgBtn').onclick = () => $('chatImgInput').click();
+$('chatImgInput').onchange = e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    chatImage = r.result;
+    const box = $('imgPreview');
+    box.style.display = 'flex';
+    box.innerHTML = '<img src="' + chatImage + '"><span class="del" onclick="clearChatImage()">✕ 移除</span>';
+  };
+  r.readAsDataURL(f);
+};
+function clearChatImage() {
+  chatImage = null; $('chatImgInput').value = '';
+  const box = $('imgPreview'); box.style.display = 'none'; box.innerHTML = '';
+}
+
+async function ask(q) {
+  if (busy) return;
+  q = (q || $('input').value).trim();
+  if (!q) return;
+  $('input').value = ''; $('empty')?.remove();
+  busy = true; $('sendBtn').disabled = true;
+
+  const ub = addMsg('user');
+  ub.appendChild(document.createTextNode(q));
+  if (chatImage) {
+    const im = document.createElement('img');
+    im.src = chatImage; im.className = 'attach-thumb';
+    ub.appendChild(document.createElement('br'));
+    ub.appendChild(im);
+  }
+  clearChatImage();
+  const bubble = addMsg('bot');
+  bubble.innerHTML = '<span class="cursor"></span>';
+
+  const topk = $('topk').value;
+  let answer = '', citations = [];
+  try {
+    const resp = await api('/api/chat', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: q, mode, top_k: +topk, history, image: chatImage || undefined }),
+    });
+    if (!resp.ok) { const e = await resp.json(); throw new Error(e.detail || resp.status); }
+
+    const reader = resp.body.getReader();
+    const dec = new TextDecoder();
+    let buf = '';
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      const events = buf.split('\n\n'); buf = events.pop();
+      for (const ev of events) {
+        if (!ev.startsWith('data: ')) continue;
+        const data = JSON.parse(ev.slice(6));
+        if (data.type === 'delta') {
+          answer += data.text;
+          bubble.innerHTML = renderCites(md(answer)) + '<span class="cursor"></span>';
+          chat.scrollTop = chat.scrollHeight;
+        } else if (data.type === 'meta') {
+          bubble.dataset.meta = JSON.stringify(data);
+        } else if (data.type === 'done') {
+          answer = data.answer; citations = data.citations;
+        }
+      }
+    }
+    history.push({ role: 'user', content: q }, { role: 'assistant', content: answer });
+    if (history.length > 4) history.splice(0, history.length - 4);
+    bubble.innerHTML = renderCites(md(answer)) + tracePanel(bubble.dataset.meta) + sourcePanel(citations);
+    chat.scrollTop = chat.scrollHeight;
+  } catch (err) {
+    bubble.innerHTML = `<span style="color:#ef4444">请求失败：${esc(String(err.message || err))}</span>`;
+  } finally {
+    busy = false; $('sendBtn').disabled = false; $('input').focus();
+  }
+}
+
+function tracePanel(metaJson) {
+  if (!metaJson) return '';
+  const m = JSON.parse(metaJson);
+  const qchips = (m.queries || []).map(q => `<span class="chip">${esc(q)}</span>`).join('');
+  return `<details class="panel"><summary>🔍 检索过程（向量 ${m.vector_hits} 路 · BM25 ${m.bm25_hits} 路 · 融合候选 ${m.fused_candidates} · 检索 ${m.retrieval_ms}ms · 总耗时 ${m.total_ms || '-'}ms）</summary>
+    <div class="trace-line">
+      ${m.corrective ? '⚠️ 首轮置信度低，已触发 CRAG-lite 纠正重查<br>' : ''}
+      ${m.rewritten ? `改写后主查询：<b>${esc(m.rewritten)}</b><br>` : '未启用查询改写<br>'}
+      ${m.sub_queries?.length ? `子查询分解：${m.sub_queries.map(esc).join(' / ')}<br>` : ''}
+      实际召回查询：${qchips}
+    </div></details>`;
+}
+
+function sourcePanel(citations) {
+  if (!citations?.length) return '';
+  const max = Math.max(...citations.map(c => c.score), 0.01);
+  const cards = citations.map(c => `
+    <div class="src-card">
+      <div class="head">
+        <span><span class="ref-no">[${c.ref}]</span>${esc(c.source)}${c.section_path ? ' › ' + esc(c.section_path) : ''}</span>
+        <span>相关度 ${(c.score * 100).toFixed(0)}%<span class="score-bar" style="width:${(c.score / max) * 40 + 4}px"></span></span>
+      </div>
+      <div class="body">${esc(c.text.slice(0, 160))}${c.text.length > 160 ? '…' : ''}</div>
+    </div>`).join('');
+  return `<details class="panel" open><summary>📚 引用来源（${citations.length}）</summary>${cards}</details>`;
+}
+
+/* 事件委托：点击 [n] 角标滚动到对应来源卡片 */
+chat.addEventListener('click', e => {
+  const cite = e.target.closest('.cite');
+  if (!cite) return;
+  const ref = cite.dataset.ref;
+  const card = [...chat.querySelectorAll('.src-card')].reverse()
+    .find(c => c.querySelector('.ref-no')?.textContent === `[${ref}]`);
+  if (card) { card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    card.style.outline = '2px solid var(--primary)';
+    setTimeout(() => card.style.outline = '', 1500); }
+});
+
+/* 输入框 */
+$('input').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask(); }
+});
+$('input').addEventListener('input', e => {
+  e.target.style.height = 'auto';
+  e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+});
+$('sendBtn').onclick = () => ask();
+
+refreshDocs();
+</script>
+</body>
+</html>
